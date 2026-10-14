@@ -1,29 +1,21 @@
-import path from 'node:path'
+import express from "express";
+import mongoose from "mongoose";
+import produkRouter from "./routes/produk.route.js";
 
-import compression from 'compression'
-import cors from 'cors'
-import express from 'express'
+const app = express();
 
-import configureView from './config/view.js'
-import { errorHandler, notFoundHandler } from './middleware/error.middleware.js'
-import apiRoutes from './routes/api.routes.js'
-import webRoutes from './routes/web.routes.js'
+const dbName = "ClarissaAnataciaOng_ManajemenProdukToko";
+mongoose.connect(`mongodb://127.0.0.1:27017/${dbName}`)
+  .then(() => console.log("MongoDB Terkoneksi Sukses!"))
+  .catch((err) => console.log("Gagal koneksi: " + err.message));
 
-const app = express()
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
 
-configureView(app)
+app.use("/api/produk", produkRouter);
 
-app.use(cors())
-app.use(express.json())
-app.use(express.urlencoded({ extended: true }))
-app.use(compression())
+app.use((req, res) => {
+  res.status(404).json({ status: "error", message: "Endpoint tidak ditemukan" });
+});
 
-app.use('/storage/public', express.static(path.resolve(process.cwd(), 'storage/public')))
-
-app.use('/', webRoutes)
-app.use('/api', apiRoutes)
-
-app.use(notFoundHandler)
-app.use(errorHandler)
-
-export default app
+export default app;

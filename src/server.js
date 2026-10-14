@@ -1,9 +1,11 @@
-import app from './app.js'
-import { APP_PORT } from './config/env.js'
-import { connectDB } from './config/database.js'
+import app from "./app.js";
+import http from "http";
 
-await connectDB()
+const port = "3000";
+app.set("port", port);
 
-app.listen(APP_PORT, () => {
-  console.log(`Example app listening on port ${APP_PORT}`)
-})
+const server = http.createServer(app);
+
+server.listen(port, () => {
+  console.log(`Server running on port ${port}`);
+});
